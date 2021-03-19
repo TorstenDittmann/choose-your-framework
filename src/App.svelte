@@ -6,10 +6,13 @@
 	import { votes, history, notifications } from "./store";
 	import Toast from "./Toast.svelte";
 
+	let voted;
+
 	const sdk = Appwrite();
 	sdk.setEndpoint("https://appwrite-realtime.monitor-api.com/v1");
 	sdk.setProject("6053363c00af7");
 
+	const colors = ["#dd1b16", "#61dbfb", "#ff3b00", "#42b883"];
 	const votesUnsubscribe = sdk.subscribe(
 		"collections.60533a4bec463.documents",
 		(message) => {
@@ -36,21 +39,6 @@
 			[doc.framework]: doc.data ?? new Array(10).fill(0),
 		};
 	};
-
-	onMount(async () => {
-		const historyDocs = await sdk.database.listDocuments("60533681b159f");
-		const votesDocs = await sdk.database.listDocuments("60533a4bec463");
-
-		votes.update(votesDocs.documents.reduce(voteReducer, {}), true);
-		history.update(historyDocs.documents.reduce(historyReducer, {}));
-	});
-
-	onDestroy(() => {
-		votesUnsubscribe();
-		historyUnsubscribe();
-	});
-
-	const colors = ["#dd1b16", "#61dbfb", "#ff3b00", "#42b883"];
 	const upvote = async (framework) => {
 		if (voted) {
 			return;
@@ -61,7 +49,6 @@
 		);
 		await request.json();
 	};
-
 	$: graphVotes = {
 		labels: Object.keys($votes),
 		datasets: [
@@ -70,7 +57,6 @@
 			},
 		],
 	};
-
 	$: graphHistory = {
 		labels: ["10m", "9m", "8m", "7m", "6m", "5m", "4m", "3m", "2m", "1m"],
 		datasets: Object.entries($history).map(([key, values]) => {
@@ -80,14 +66,18 @@
 			};
 		}),
 	};
-
-	let voted;
-
 	$: {
 		if (voted) {
 			setTimeout(() => (voted = null), 1500);
 		}
 	}
+	onMount(async () => {
+		const historyDocs = await sdk.database.listDocuments("60533681b159f");
+		const votesDocs = await sdk.database.listDocuments("60533a4bec463");
+
+		votes.update(votesDocs.documents.reduce(voteReducer, {}), true);
+		history.update(historyDocs.documents.reduce(historyReducer, {}));
+	});
 </script>
 
 <main>
@@ -123,7 +113,11 @@
 		most current version of the document without further REST queries.
 	</p>
 	<p>Powered by <a href="https://appwrite.io">Appwrite</a></p>
-	<img class="appwrite" src="https://appwrite.io/images-ee/press/logo-1.png" alt="Appwrite Logo" />
+	<img
+		class="appwrite"
+		src="https://appwrite.io/images-ee/press/logo-1.png"
+		alt="Appwrite Logo"
+	/>
 	<div class="message-box">
 		{#each $notifications as notification}
 			<Toast>
