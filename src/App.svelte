@@ -113,11 +113,13 @@
 		most current version of the document without further REST queries.
 	</p>
 	<p>Powered by <a href="https://appwrite.io">Appwrite</a></p>
-	<img
-		class="appwrite"
-		src="https://appwrite.io/images-ee/press/logo-1.png"
-		alt="Appwrite Logo"
-	/>
+	<a href="https://appwrite.io">
+		<img
+			class="appwrite"
+			src="https://appwrite.io/images-ee/press/logo-1.png"
+			alt="Appwrite Logo"
+		/>
+	</a>
 	<div class="message-box">
 		{#each $notifications as notification}
 			<Toast>
