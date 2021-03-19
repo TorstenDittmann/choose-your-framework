@@ -3,7 +3,8 @@
 	import Chart from "svelte-frappe-charts";
 
 	import { onDestroy, onMount } from "svelte";
-	import { votes, history } from "./store";
+	import { votes, history, notifications } from "./store";
+import Toast from "./Toast.svelte";
 
 	const sdk = Appwrite();
 	sdk.setEndpoint("https://appwrite-realtime.monitor-api.com/v1");
@@ -40,7 +41,7 @@
 		const historyDocs = await sdk.database.listDocuments("60533681b159f");
 		const votesDocs = await sdk.database.listDocuments("60533a4bec463");
 
-		votes.update(votesDocs.documents.reduce(voteReducer, {}));
+		votes.update(votesDocs.documents.reduce(voteReducer, {}), true);
 		history.update(historyDocs.documents.reduce(historyReducer, {}));
 	});
 
@@ -49,6 +50,7 @@
 		historyUnsubscribe();
 	});
 
+	const colors = ["#dd1b16", "#61dbfb", "#ff3b00", "#42b883"];
 	const upvote = async (framework) => {
 		if (voted) {
 			return;
@@ -102,16 +104,27 @@
 			</div>
 		{/each}
 	</div>
-	<h1>Graph</h1>
-	<Chart data={graphVotes} type="bar" />
+	<Chart
+		height={80}
+		data={graphVotes}
+		type="percentage"
+		maxSlices={4}
+		animate={true}
+		colors={colors}
+	/>
 	<h1>History</h1>
 	<Chart
+		colors={colors}
 		data={graphHistory}
 		type="line"
-		lineOptions={{
-			regionFill: 1,
-		}}
 	/>
+	<div class="message-box">
+		{#each $notifications as notification}
+			<Toast>
+				{notification.label}
+			</Toast>
+		{/each}
+	</div>
 </main>
 
 <style>
@@ -169,11 +182,26 @@
 	main .frameworks div:hover img {
 		height: 10rem;
 	}
+	.message-box {
+		position: absolute;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+    	flex-direction: column;
+		top: 0;
+		right: 0;
+		width: 16rem;
+		height: 100vh;
+	}
+	:global(.frappe-chart .chart-legend) {
+		display: none;
+	}
 	@keyframes voted {
 		0% {
 			transform: scale(0);
 		}
-		10%, 90% {
+		10%,
+		90% {
 			transform: scale(1.5);
 		}
 		100% {
