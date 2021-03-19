@@ -15,7 +15,7 @@ namespace history
             client
               .SetEndPoint("https://appwrite-realtime.monitor-api.com/v1")
               .SetProject("6053363c00af7")
-              .SetKey("b95498ca3a997f7bc140af7ee34a74d008ae7d312db10cfae0c3e0aea82b4c72828233cd3809b40605f511a18554b49cfb046f94aee71a55123f87e7e4b2428eda338cf808442f321d82e0af6ebcc8897a5b04dbee88376d6a7ccf624d48afb65ffaf9eadf03bdcc126d0c6a423ee5129587c561a9477cd10c047f0f92755d79")
+              .SetKey(Environment.GetEnvironmentVariable("KEY"))
             ;
 
             var timestamp = DateTimeOffset.Now;
