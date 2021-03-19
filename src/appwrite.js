@@ -302,18 +302,7 @@ export default function () {
             timeout: null,
             channels: {},
             lastMessage: {},
-            createSocket: () => {
-                const channels = new URLSearchParams();
-                channels.set('project', config.project);
-                for (const property in realtime.channels) {
-                    channels.append('channels[]', property);
-                }
-                if (realtime.socket && realtime.socket.readyState && realtime.socket.readyState === WebSocket.OPEN) {
-                    realtime.socket.close();
-                }
-
-                realtime.socket = new WebSocket(config.endpointRealtime + '/realtime?' + channels.toString());
-                const onMessage = (channel, callback) =>
+            onMessage: (channel, callback) =>
                     (event) => {
                         try {
                             const data = JSON.parse(event.data);
@@ -327,11 +316,21 @@ export default function () {
                         } catch (e) {
                             console.error(e);
                         }
-                    };
+                    },
+            createSocket: () => {
+                const channels = new URLSearchParams();
+                channels.set('project', config.project);
+                for (const property in realtime.channels) {
+                    channels.append('channels[]', property);
+                }
+                if (realtime.socket && realtime.socket.readyState && realtime.socket.readyState === WebSocket.OPEN) {
+                    realtime.socket.close();
+                }
 
+                realtime.socket = new WebSocket(config.endpointRealtime + '/realtime?' + channels.toString());
                 for (const channel in realtime.channels) {
                     realtime.channels[channel].forEach(callback => {
-                        realtime.socket.addEventListener('message', onMessage(channel, callback));
+                        realtime.socket.addEventListener('message', callback);
                     });
                 }
 
@@ -375,7 +374,7 @@ export default function () {
                 if (!(channel in realtime.channels)) {
                     realtime.channels[channel] = [];
                 }
-                realtime.channels[channel].push(callback);
+                realtime.channels[channel].push(realtime.onMessage(channel, callback));
                 clearTimeout(realtime.timeout);
                 realtime.timeout = setTimeout(() => {
                     realtime.createSocket();
@@ -384,7 +383,8 @@ export default function () {
 
             return () => {
                 channels.forEach(channel => {
-                    realtime.socket.removeEventlistener('message', onMessage);
+                    window.getEventListener(realtime.socket)
+                    realtime.socket.removeEventListener('message', callback);
                     realtime.channels[channel].splice(realtime.channels[channel].indexOf(callback), 1);
                 })
             }

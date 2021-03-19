@@ -4,7 +4,7 @@
 
 	import { onDestroy, onMount } from "svelte";
 	import { votes, history, notifications } from "./store";
-import Toast from "./Toast.svelte";
+	import Toast from "./Toast.svelte";
 
 	const sdk = Appwrite();
 	sdk.setEndpoint("https://appwrite-realtime.monitor-api.com/v1");
@@ -109,15 +109,21 @@ import Toast from "./Toast.svelte";
 		data={graphVotes}
 		type="percentage"
 		maxSlices={4}
-		animate={true}
-		colors={colors}
+		{colors}
 	/>
 	<h1>History</h1>
-	<Chart
-		colors={colors}
-		data={graphHistory}
-		type="line"
-	/>
+	<Chart {colors} data={graphHistory} type="line" />
+	<h1>About</h1>
+	<p>
+		This page serves as an example of the upcoming real-time feature for
+		Appwrite. The realtime feature on Appwrite lets you listen to all
+		server-side events from Appwrite and gets the associated payload
+		delivered in realtime via WebSockets. For example, the client can
+		receive all changes to a document in real time and thus always have the
+		most current version of the document without further REST queries.
+	</p>
+	<p>Powered by <a href="https://appwrite.io">Appwrite</a></p>
+	<img class="appwrite" src="https://appwrite.io/images-ee/press/logo-1.png" alt="Appwrite Logo" />
 	<div class="message-box">
 		{#each $notifications as notification}
 			<Toast>
@@ -135,10 +141,14 @@ import Toast from "./Toast.svelte";
 		margin: 0 auto;
 	}
 	h1 {
-		color: #ff3e00;
+		color: #f02e65;
 		text-transform: uppercase;
 		font-size: 4em;
 		font-weight: 100;
+	}
+	p {
+		font-weight: 300;
+		line-height: 1.5;
 	}
 	main .frameworks {
 		display: grid;
@@ -182,12 +192,15 @@ import Toast from "./Toast.svelte";
 	main .frameworks div:hover img {
 		height: 10rem;
 	}
+	img.appwrite {
+		width: 12rem;
+	}
 	.message-box {
 		position: absolute;
 		display: flex;
 		justify-content: center;
 		align-items: center;
-    	flex-direction: column;
+		flex-direction: column;
 		top: 0;
 		right: 0;
 		width: 16rem;

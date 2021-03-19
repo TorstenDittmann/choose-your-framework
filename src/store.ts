@@ -25,7 +25,7 @@ const createVotes = () => {
             }
             return {
                 ...n,
-                ...differences
+                ...(fresh ? m : differences)
             }
         }),
     };
