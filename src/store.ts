@@ -1,7 +1,7 @@
-import { writable } from 'svelte/store';
+import { getStore } from './lib/hmr-stores';
 
 const createVotes = () => {
-    const { subscribe, set, update } = writable({
+    const { subscribe, set, update } = getStore('votes', {
         Angular: 0,
         React: 0,
         Svelte: 0,
@@ -31,11 +31,9 @@ const createVotes = () => {
     };
 }
 
-export const votes = createVotes();
-
 const createHistory = () => {
     const defaultValue = new Array(10).fill(0);
-    const { subscribe, update } = writable({
+    const { subscribe, update } = getStore('history', {
         Angular: defaultValue,
         React: defaultValue,
         Svelte: defaultValue,
@@ -52,7 +50,7 @@ const createHistory = () => {
 }
 
 const createNotifications = () => {
-    const { subscribe, update } = writable([]);
+    const { subscribe, update } = getStore('notifications', []);
 
     return {
         subscribe,
@@ -69,5 +67,6 @@ const createNotifications = () => {
     }
 }
 
+export const votes = createVotes();
 export const history = createHistory();
 export const notifications = createNotifications();

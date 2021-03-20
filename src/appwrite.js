@@ -383,7 +383,6 @@ export default function () {
 
             return () => {
                 channels.forEach(channel => {
-                    window.getEventListener(realtime.socket)
                     realtime.socket.removeEventListener('message', callback);
                     realtime.channels[channel].splice(realtime.channels[channel].indexOf(callback), 1);
                 })

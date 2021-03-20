@@ -2,31 +2,34 @@
 	import Appwrite from "./appwrite";
 	import Chart from "svelte-frappe-charts";
 
-	import { onDestroy, onMount } from "svelte";
+	import { onMount } from "svelte";
 	import { votes, history, notifications } from "./store";
 	import Toast from "./Toast.svelte";
+	import logoAngular from "./assets/Angular.svg";
+	import logoReact from "./assets/React.svg";
+	import logoSvelte from "./assets/Svelte.svg";
+	import logoVue from "./assets/Vue.svg";
 
-	let voted;
+	let voted: string;
 
 	const sdk = Appwrite();
 	sdk.setEndpoint("https://appwrite-realtime.monitor-api.com/v1");
 	sdk.setProject("6053363c00af7");
-
+	sdk.subscribe("collections.60533a4bec463.documents", (message) => {
+		const data = [message.payload];
+		votes.update(data.reduce(voteReducer, {}));
+	});
+	sdk.subscribe("collections.60533681b159f.documents", (message) => {
+		const data = [message.payload];
+		history.update(data.reduce(historyReducer, {}));
+	});
 	const colors = ["#dd1b16", "#61dbfb", "#ff3b00", "#42b883"];
-	const votesUnsubscribe = sdk.subscribe(
-		"collections.60533a4bec463.documents",
-		(message) => {
-			const data = [message.payload];
-			votes.update(data.reduce(voteReducer, {}));
-		}
-	);
-	const historyUnsubscribe = sdk.subscribe(
-		"collections.60533681b159f.documents",
-		(message) => {
-			const data = [message.payload];
-			history.update(data.reduce(historyReducer, {}));
-		}
-	);
+	const logos = {
+		Angular: logoAngular,
+		React: logoReact,
+		Svelte: logoSvelte,
+		Vue: logoVue,
+	};
 	const voteReducer = (acc, doc) => {
 		return {
 			...acc,
@@ -88,7 +91,7 @@
 				on:click={() => upvote(framework)}
 				class:voted={voted === framework}
 			>
-				<img src={`/${framework}.svg`} alt={framework} />
+				<img src={logos[framework]} alt={framework} />
 				<p>{votes}</p>
 				<h1>+1</h1>
 			</div>
@@ -101,6 +104,7 @@
 		maxSlices={4}
 		{colors}
 	/>
+
 	<h1>History</h1>
 	<Chart {colors} data={graphHistory} type="line" />
 	<h1>About</h1>
@@ -130,6 +134,10 @@
 </main>
 
 <style>
+	:root {
+		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+			Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+	}
 	main {
 		text-align: center;
 		padding: 1em;
