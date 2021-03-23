@@ -15,10 +15,13 @@
 	const sdk = Appwrite();
 	sdk.setEndpoint("https://appwrite-realtime.monitor-api.com/v1");
 	sdk.setProject("6053363c00af7");
-	sdk.subscribe("collections.60533a4bec463.documents", (message) => {
-		const data = [message.payload];
-		votes.update(data.reduce(voteReducer, {}));
-	});
+	const votesUnsubscribe = sdk.subscribe(
+		"collections.60533a4bec463.documents",
+		(message) => {
+			const data = [message.payload];
+			votes.update(data.reduce(voteReducer, {}));
+		}
+	);
 	sdk.subscribe("collections.60533681b159f.documents", (message) => {
 		const data = [message.payload];
 		history.update(data.reduce(historyReducer, {}));
@@ -80,6 +83,8 @@
 
 		votes.update(votesDocs.documents.reduce(voteReducer, {}), true);
 		history.update(historyDocs.documents.reduce(historyReducer, {}));
+
+		setTimeout(votesUnsubscribe, 10000);
 	});
 </script>
 
@@ -134,9 +139,11 @@
 </main>
 
 <style>
+	@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
 	:root {
-		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-			Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+		font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI",
+			Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+			sans-serif;
 	}
 	main {
 		text-align: center;
