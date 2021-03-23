@@ -83,8 +83,6 @@
 
 		votes.update(votesDocs.documents.reduce(voteReducer, {}), true);
 		history.update(historyDocs.documents.reduce(historyReducer, {}));
-
-		setTimeout(votesUnsubscribe, 10000);
 	});
 </script>
 
