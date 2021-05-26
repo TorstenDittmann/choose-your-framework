@@ -17,6 +17,7 @@
     "vite": "^2.1.2"
   },
   "dependencies": {
+    "aw-test-realtime": "^0.0.6",
     "node-appwrite": "^2.0.0",
     "svelte-frappe-charts": "^1.5.0"
   }

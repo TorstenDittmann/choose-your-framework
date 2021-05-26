@@ -1,7 +1,6 @@
 <script lang="ts">
-	import Appwrite from "./appwrite";
+	//import Appwrite from "./appwrite";
 	import Chart from "svelte-frappe-charts";
-
 	import { onMount } from "svelte";
 	import { votes, history, notifications } from "./store";
 	import Toast from "./Toast.svelte";
@@ -10,22 +9,27 @@
 	import logoSvelte from "./assets/Svelte.svg";
 	import logoVue from "./assets/Vue.svg";
 
+	import { Appwrite } from "aw-test-realtime";
 	let voted: string;
 
-	const sdk = Appwrite();
-	sdk.setEndpoint("https://appwrite-realtime.monitor-api.com/v1");
+	const sdk = new Appwrite();
+	sdk.setEndpoint("http://realtime.appwrite.org/v1");
 	sdk.setProject("6053363c00af7");
-	const votesUnsubscribe = sdk.subscribe(
-		"collections.60533a4bec463.documents",
-		(message) => {
-			const data = [message.payload];
-			votes.update(data.reduce(voteReducer, {}));
-		}
-	);
-	sdk.subscribe("collections.60533681b159f.documents", (message) => {
+
+	sdk.subscribe("collections.60533a4bec463.documents", (message: {
+		payload: any;
+	}) => {
+		const data = [message.payload];
+		votes.update(data.reduce(voteReducer, {}));
+	});
+	sdk.subscribe("collections.60533681b159f.documents", (message: {
+		payload: any;
+	}) => {
 		const data = [message.payload];
 		history.update(data.reduce(historyReducer, {}));
 	});
+
+	sdk.subscribe('account', console.log)
 	const colors = ["#dd1b16", "#61dbfb", "#ff3b00", "#42b883"];
 	const logos = {
 		Angular: logoAngular,
