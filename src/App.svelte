@@ -13,7 +13,7 @@
 	let voted: string;
 
 	const sdk = new Appwrite();
-	sdk.setEndpoint("http://realtime.appwrite.org/v1");
+	sdk.setEndpoint("http://realtime.dittmann.dev/v1");
 	sdk.setProject("6053363c00af7");
 
 	sdk.subscribe("collections.60533a4bec463.documents", (message: {
