@@ -7,7 +7,7 @@ module.exports = async (req, res) => {
 
     let database = new sdk.Database(client);
 
-    client.setEndpoint('https://appwrite-realtime.monitor-api.com/v1') // Your API Endpoint 
+    client.setEndpoint('https://realtime.dittmann.dev/v1') // Your API Endpoint 
         .setProject('6053363c00af7') // Your project ID 
         .setKey(process.env.API_KEY); // Your secret API key
 
